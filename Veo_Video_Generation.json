@@ -1,0 +1,655 @@
+{
+  "name": "My workflow 4",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "799664aa-bc40-4479-8415-4a2ce6261d4c",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        0,
+        1300
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/veo3/requests/{{ $('Create Video').item.json.request_id }}/status ",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "82228084-4d70-4197-bc81-b7b8186585e9",
+      "name": "Get status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1060,
+        1300
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "id": "6e3aa054-6dde-4bc8-b126-458bc7bd872c",
+      "name": "Wait 60 sec.",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        880,
+        1300
+      ],
+      "webhookId": "490facb8-d0ae-402e-ab59-a87720cf0bdd",
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "id": "8b61059d-3821-4155-a05c-8a7093b17995",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        0,
+        1160
+      ],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "383d112e-2cc6-4dd4-8985-f09ce0bd1781",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "COMPLETED"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "778f4b67-9a77-497e-b254-4c65bab440b6",
+      "name": "Completed?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1240,
+        1300
+      ],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1pcoY9N_vQp44NtSRR5eskkL5Qd0N0BGq7Jh_4m-7VEQ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcoY9N_vQp44NtSRR5eskkL5Qd0N0BGq7Jh_4m-7VEQ/edit?usp=drivesdk",
+          "cachedResultName": "Video Google Veo3"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11ebWJvwwXHgvQld9kxywKQUvIoBw6xMa0g0BuIqHDxE/edit#gid=0",
+          "cachedResultName": "Foglio1"
+        },
+        "columns": {
+          "value": {
+            "VIDEO": "={{ $('Get Url Video').item.json.video.url }}",
+            "row_number": "={{ $('Get new video').item.json.row_number }}"
+          },
+          "schema": [
+            {
+              "id": "PROMPT",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "PROMPT",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DURATION",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "DURATION",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "VIDEO",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "VIDEO",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YOUTUBE_URL",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "YOUTUBE_URL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "db41dd91-3319-461f-b706-221031ceca47",
+      "name": "Update result",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1080,
+        1560
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c713d31f-9abd-496a-ac79-e8e2efe60aa0",
+              "name": "prompt",
+              "type": "string",
+              "value": "={{ $json.PROMPT }}\n\nDuration of the video: {{ $json.DURATION }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7cbc1164-49e7-42d0-a59c-129d1ea64ee9",
+      "name": "Set data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        440,
+        1300
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1pcoY9N_vQp44NtSRR5eskkL5Qd0N0BGq7Jh_4m-7VEQ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcoY9N_vQp44NtSRR5eskkL5Qd0N0BGq7Jh_4m-7VEQ/edit?usp=drivesdk",
+          "cachedResultName": "Video Google Veo3"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcoY9N_vQp44NtSRR5eskkL5Qd0N0BGq7Jh_4m-7VEQ/edit#gid=0",
+          "cachedResultName": "Foglio1"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "VIDEO"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "748d4d41-a9c1-4265-8d73-20780a2f3847",
+      "name": "Get new video",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        220,
+        1300
+      ],
+      "typeVersion": 4.5
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://queue.fal.run/fal-ai/veo3",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n     \"prompt\": \"{{$json.prompt}}\"\n}",
+        "options": {}
+      },
+      "id": "a0ed2e80-51c3-4dbc-97ab-f544d32fd39d",
+      "name": "Create Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        660,
+        1300
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "=https://queue.fal.run/fal-ai/veo3/requests/{{ $json.request_id }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "9e4ab969-13c1-436f-9a03-b3b39e6236f0",
+      "name": "Get Url Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        0,
+        1680
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "url": "={{ $('Get Url Video').item.json.video.url }}",
+        "options": {}
+      },
+      "id": "1947f22d-90b2-4176-bd0e-2efcce4c459d",
+      "name": "Get File Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        620,
+        1680
+      ],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "name": "={{ $now.format('yyyyLLddHHmmss') }}-{{ $('Get Url Video').item.json.video.file_name }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1aHRwLWyrqfzoVC8HoB-YMrBvQ4tLC-NZ",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1aHRwLWyrqfzoVC8HoB-YMrBvQ4tLC-NZ",
+          "cachedResultName": "Fal.run"
+        },
+        "options": {}
+      },
+      "id": "df789779-0ef7-42bd-b8e2-7235d061e60a",
+      "name": "Upload Video",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        900,
+        1560
+      ],
+      "typeVersion": 3
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.upload-post.com/api/upload",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "={{ $('Generate title').item.json.message.content }}"
+            },
+            {
+              "name": "user",
+              "value": "YOUR_USERNAME"
+            },
+            {
+              "name": "platform[]",
+              "value": "youtube"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "video",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9934e58c-b13b-43f1-9a9e-80ff4db514b3",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        900,
+        1780
+      ],
+      "typeVersion": 4.2,
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Input: {{ $('Get new video').item.json.PROMPT }}"
+            },
+            {
+              "content": "You are a YouTube SEO expert specialized in creating engaging and optimized titles.\n\nYour task is to generate an effective title for a YouTube video based on the user's video description.\n\nGUIDELINES:\n- Maximum 60 characters to avoid truncation\n- Use relevant keywords for SEO\n- Make the title catchy and clickable\n- Avoid excessive or misleading clickbait\n- Consider the target audience of the content\n- Use numbers, questions, or power words when appropriate\n- IMPORTANT: Generate the title in the same language as the input description\n\nOUTPUT FORMAT:\nProvide only the title, without additional explanations.\n\nEXAMPLE:\nInput: \"Tutorial video on how to cook perfect pasta carbonara\"\nOutput: \"PERFECT Carbonara in 10 Minutes - Chef's Secrets\"",
+              "role": "system"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7b03e08f-cc77-45ac-8a40-97a3d8dd9805",
+      "name": "Generate title",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        240,
+        1680
+      ],
+      "typeVersion": 1.8
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1pcoY9N_vQp44NtSRR5eskkL5Qd0N0BGq7Jh_4m-7VEQ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pcoY9N_vQp44NtSRR5eskkL5Qd0N0BGq7Jh_4m-7VEQ/edit?usp=drivesdk",
+          "cachedResultName": "Video Google Veo3"
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11ebWJvwwXHgvQld9kxywKQUvIoBw6xMa0g0BuIqHDxE/edit#gid=0",
+          "cachedResultName": "Foglio1"
+        },
+        "columns": {
+          "value": {
+            "VIDEO": "=",
+            "row_number": "={{ $('Get new video').item.json.row_number }}",
+            "YOUTUBE_URL": "https://youtu.be/{{ $json.results.youtube.video_id }}"
+          },
+          "schema": [
+            {
+              "id": "PROMPT",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "PROMPT",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "DURATION",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "DURATION",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "VIDEO",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "VIDEO",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "YOUTUBE_URL",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "YOUTUBE_URL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "88520833-45de-485e-8a2e-6e1384dcf0a1",
+      "name": "Update Youtube URL",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1080,
+        1780
+      ],
+      "typeVersion": 4.5
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Set data": {
+      "main": [
+        [
+          {
+            "node": "Create Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Completed?": {
+      "main": [
+        [
+          {
+            "node": "Get Url Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 60 sec.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get status": {
+      "main": [
+        [
+          {
+            "node": "Completed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video": {
+      "main": [
+        [
+          {
+            "node": "Wait 60 sec.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Update Youtube URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Video": {
+      "main": [
+        [
+          {
+            "node": "Update result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 60 sec.": {
+      "main": [
+        [
+          {
+            "node": "Get status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Url Video": {
+      "main": [
+        [
+          {
+            "node": "Generate title",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get new video": {
+      "main": [
+        [
+          {
+            "node": "Set data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate title": {
+      "main": [
+        [
+          {
+            "node": "Get File Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File Video": {
+      "main": [
+        [
+          {
+            "node": "Upload Video",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get new video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "",
+  "meta": {
+    "instanceId": "377d98c45abc719f2908da875e2b1b6f50dd844a0ae87f432982fbd04edea496"
+  },
+  "tags": []
+}

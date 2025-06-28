@@ -1,4 +1,4 @@
-# 🎥 Generate AI Videos with Google Veo3 and Upload to YouTube (n8n Workflow)
+# 🎥 n8n Workflow to generate videos with Google Veo3 and upload it on Youtube
 
 This `n8n` workflow automates the process of **creating AI-generated videos with Google Veo3**, uploading the final video to **Google Drive and YouTube**, and **logging everything in Google Sheets**.
 
